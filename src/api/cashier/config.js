@@ -1,7 +1,8 @@
 import request from '@/utils/request'
 
 // 基础路径，根据你的 Nginx 或开发环境配置调整
-const apiBase = '/biz-api/config'
+// const apiBase = '/biz-api/config'
+const apiBase = '/api-local/api/config'
 
 export function listConfig(query) {
     return request({
