@@ -32,7 +32,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="热钱包资产 (Gas/USDT)" min-width="200" align="center">
+        <el-table-column label="gas钱包资产" min-width="200" align="center">
           <template #default="scope">
             <div style="text-align: left; padding-left: 10px;">
               <div>
@@ -51,7 +51,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="热钱包地址" prop="hotWalletAddress" min-width="300" align="center" show-overflow-tooltip>
+        <el-table-column label="gas钱包地址" prop="hotWalletAddress" min-width="300" align="center" show-overflow-tooltip>
           <template #default="scope">
             {{ scope.row.hotWalletAddress }}
             <el-icon
@@ -61,7 +61,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="归集钱包" min-width="150" align="center">
+        <el-table-column label="归集目的钱包余额" min-width="150" align="center">
           <template #default="scope">
              <span style="color: #409EFF; font-weight: bold;">
                {{ scope.row.collectWalletUsdt }} U

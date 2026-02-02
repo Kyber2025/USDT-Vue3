@@ -121,27 +121,49 @@
       </el-col>
 
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
-        <el-card class="update-log">
+        <el-card class="update-log" v-loading="loading">
           <template v-slot:header>
             <div class="clearfix">
               <span>今日资金概览 (实时)</span>
+              <el-button style="float: right; padding: 3px 0" type="text" icon="Refresh" @click="getTodayData">刷新</el-button>
             </div>
           </template>
           <div class="body">
+
             <div class="stat-item">
               <div class="stat-title">今日充值总额 (USDT)</div>
-              <div class="stat-value" style="color: #f56c6c">124,592.00</div>
+              <div class="stat-value" style="color: #67C23A">
+                {{ todayStats.totalUsdtCollected || '0.00' }}
+              </div>
             </div>
+
             <div class="stat-item">
-              <div class="stat-title">今日归集笔数</div>
-              <div class="stat-value" style="color: #409eff">3,421 笔</div>
+              <div class="stat-title">今日订单损耗 (USDT)</div>
+              <div class="stat-value"
+                   :style="{ color: Number(todayStats.totalOrderLoss) > 0 ? '#F56C6C' : '#909399' }">
+                {{ todayStats.totalOrderLoss || '0.00' }}
+              </div>
             </div>
+
             <div class="stat-item">
-              <div class="stat-title">热钱包 TRX 余额 (Gas)</div>
-              <div class="stat-value" style="color: #e6a23c">5,200 TRX</div>
+              <div class="stat-title">预估利润 (1%费率)</div>
+              <div class="stat-value" style="color: #409eff">
+                {{ todayStats.estimatedProfit || '0.00' }}
+              </div>
             </div>
+
+            <div class="stat-item">
+              <div class="stat-title">今日归集笔数 / 成功率</div>
+              <div class="stat-value" style="color: #303133; font-size: 20px;">
+                {{ todayStats.totalTxCount || 0 }} 笔
+                <span style="font-size: 14px; color: #909399; margin-left: 5px;">
+                  ( {{ todayStats.successRate || '0%' }} )
+                </span>
+              </div>
+            </div>
+
             <div style="text-align: right; margin-top: 10px;">
-              <el-tag size="small">自动刷新: 开</el-tag>
+              <el-tag size="small" type="info">数据来源: 区块链实时</el-tag>
             </div>
           </div>
         </el-card>
@@ -152,9 +174,34 @@
 
 <script setup name="Index">
 import { ref } from 'vue';
+import { getTodaySummary } from '@/api/cashier/collection';
 
 const version = ref('1.2.0')
 const activeName = ref('1')
+const loading = ref(false)
+
+// 响应式数据，与后端 CollectionReportVO.SummaryInfo 对应
+const todayStats = ref({
+  totalUsdtCollected: 0,
+  totalOrderLoss: 0,
+  estimatedProfit: 0,
+  totalTxCount: 0,
+  successRate: '0.00%'
+})
+
+/** 获取今日概况数据 */
+function getTodayData() {
+  loading.value = true;
+  getTodaySummary().then(response => {
+    // 假设后端返回结构为 ResultDTO<CollectionReportVO.SummaryInfo>
+    if (response.data) {
+      todayStats.value = response.data;
+    }
+    loading.value = false;
+  }).catch(() => {
+    loading.value = false;
+  })
+}
 
 function goTarget(url) {
   if(url.startsWith('http')) {
@@ -164,6 +211,11 @@ function goTarget(url) {
     console.log('跳转路由:', url)
   }
 }
+
+// 挂载时加载数据
+onMounted(() => {
+  getTodayData();
+})
 </script>
 
 <style scoped lang="scss">
